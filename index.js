@@ -49,6 +49,24 @@ app.get('/uploads/:filename', (req, res) => {
     res.sendFile(filePath);
 });
 
+
+// Route to list all image files as JSON
+app.get('/images', (req, res) => {
+    fs.readdir(uploadDir, (err, files) => {
+        if (err) {
+            return res.status(500).send('Unable to scan directory.');
+        }
+
+        const imageFiles = files.filter(file => {
+            const ext = path.extname(file).toLowerCase();
+            return ['.png', '.jpg', '.jpeg', '.gif'].includes(ext);
+        });
+
+        const imageUrls = imageFiles.map(file => `/uploads/${file}`);
+        res.json(imageUrls);
+    });
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
